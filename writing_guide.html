@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineering Journal Writing Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#0d1b2a;
+  --bg-secondary:#1a2a3a;
+  --bg-card:#1e3044;
+  --accent:#00d9ff;
+  --accent-dim:#0098b5;
+  --accent-muted:rgba(0,217,255,.12);
+  --text-primary:#f0f4f8;
+  --text-secondary:#8ba3be;
+  --text-muted:#5a7a9a;
+  --border:#2a3f55;
+  --error:#ef4444;
+  --error-bg:rgba(239,68,68,.12);
+  --success:#22c55e;
+  --success-bg:rgba(34,197,94,.12);
+  --warning:#f59e0b;
+  --warning-bg:rgba(245,158,11,.10);
+  --info-bg:rgba(0,217,255,.08);
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);font-size:16px;line-height:1.6;min-height:100vh}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
+
+/* ── Auth screen ── */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.auth-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:400px}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.auth-logo-icon{width:38px;height:38px;border-radius:var(--radius-sm);background:var(--accent-muted);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.auth-logo-text{font-size:15px;font-weight:600;color:var(--text-primary);line-height:1.2}
+.auth-logo-sub{font-size:12px;color:var(--text-muted);font-weight:400}
+.auth-title{font-size:18px;font-weight:600;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--text-secondary);margin-bottom:24px}
+.auth-error{font-size:13px;color:var(--error);background:var(--error-bg);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;display:none}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px}
+.field input{width:100%;padding:10px 12px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;min-height:44px;transition:border-color .2s}
+.field input:focus{border-color:var(--accent);outline:none}
+.field input::placeholder{color:var(--text-muted)}
+.btn{width:100%;padding:11px 16px;font-family:inherit;font-size:14px;font-weight:500;border-radius:var(--radius-sm);cursor:pointer;min-height:44px;transition:all .2s;border:none}
+.btn-primary{background:var(--accent);color:#0d1b2a}
+.btn-primary:hover{background:#00c4e6}
+.btn-ghost{background:transparent;color:var(--text-secondary);border:1px solid var(--border);margin-top:10px}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-google{background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border);margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-google:hover{border-color:var(--accent);color:var(--accent)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--text-muted);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-switch{text-align:center;margin-top:20px;font-size:13px;color:var(--text-muted)}
+.auth-switch button{background:none;border:none;color:var(--accent);cursor:pointer;font-family:inherit;font-size:13px;padding:2px;text-decoration:underline}
+
+/* ── App shell ── */
+#app-screen{display:none;min-height:100vh}
+.app-shell{max-width:900px;margin:0 auto;padding:0 20px}
+header{padding:24px 0 0;border-bottom:1px solid var(--border)}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:var(--radius-sm);background:var(--accent-muted);border:1px solid var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:16px;font-weight:600;color:var(--text-primary);line-height:1.2}
+.logo-sub{font-size:12px;color:var(--text-muted);font-weight:400}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#sync-status{font-size:12px;padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted);white-space:nowrap}
+.sync-synced{border-color:var(--success)!important;color:var(--success)!important}
+.sync-error{border-color:var(--error)!important;color:var(--error)!important}
+.sync-loading{border-color:var(--warning)!important;color:var(--warning)!important}
+.signout-btn{font-size:12px;padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--text-muted);background:transparent;cursor:pointer;font-family:inherit;min-height:28px;white-space:nowrap}
+.signout-btn:hover{border-color:var(--error);color:var(--error)}
+.project-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.project-row label{font-size:13px;color:var(--text-muted);white-space:nowrap}
+#project-name{font-family:inherit;font-size:14px;font-weight:500;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text-primary);padding:4px 6px;min-width:220px;transition:border-color .2s}
+#project-name:focus{border-bottom-color:var(--accent);outline:none}
+#project-name::placeholder{color:var(--text-muted)}
+nav[aria-label="Sections"]{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav[aria-label="Sections"]::-webkit-scrollbar{display:none}
+.tab-btn{padding:10px 18px;font-size:14px;font-weight:500;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;min-height:44px;font-family:inherit}
+.tab-btn:hover{color:var(--text-primary)}
+.tab-btn[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent-muted);color:var(--accent);font-size:10px;font-weight:600;margin-left:6px;vertical-align:middle}
+main{padding:28px 0 60px}
+.section-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.section-name{font-size:22px;font-weight:600;color:var(--text-primary)}
+.section-model{font-size:12px;padding:3px 10px;border-radius:100px;background:var(--accent-muted);color:var(--accent);border:1px solid var(--accent-dim)}
+.section-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:720px;margin-bottom:20px}
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.progress-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease}
+.progress-label{font-size:12px;color:var(--text-muted);white-space:nowrap;min-width:60px;text-align:right}
+.blocks{display:flex;flex-direction:column;gap:8px}
+.block{border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg-card);overflow:hidden;transition:border-color .2s}
+.block:hover{border-color:var(--accent-dim)}
+.block.is-done{border-color:var(--success);opacity:.7}
+.block.is-done:hover{opacity:1}
+.block-trigger{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;background:none;border:none;width:100%;text-align:left;color:inherit;font-family:inherit;min-height:56px}
+.block-trigger:focus-visible{outline:3px solid var(--accent);outline-offset:-3px;border-radius:var(--radius-md)}
+.block-num{font-size:11px;font-weight:600;color:var(--text-muted);min-width:20px;flex-shrink:0}
+.block-name{font-size:15px;font-weight:500;color:var(--text-primary);flex:1;text-align:left}
+.block.is-done .block-name{text-decoration:line-through;color:var(--text-muted)}
+.block-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.tag-required{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.tag-conditional{background:var(--warning-bg);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.tag-optional{background:rgba(139,163,190,.1);color:var(--text-secondary);border:1px solid var(--border)}
+.chevron{font-size:14px;color:var(--text-muted);flex-shrink:0;transition:transform .2s;user-select:none}
+.block-trigger[aria-expanded="true"] .chevron{transform:rotate(180deg)}
+.done-check{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.block.is-done .done-check{background:var(--success);border-color:var(--success)}
+.block-body{display:none;border-top:1px solid var(--border);padding:20px 20px 16px;background:var(--bg-secondary)}
+.block-body.is-open{display:block}
+.writing-q{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:10px;line-height:1.5}
+.writing-hint{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:16px}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.checklist li{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text-secondary);line-height:1.55}
+.check-icon{width:16px;height:16px;flex-shrink:0;margin-top:1px;border:1.5px solid var(--text-muted);border-radius:3px;display:flex;align-items:center;justify-content:center;opacity:.5}
+.callout{font-size:13px;padding:10px 14px;border-radius:var(--radius-sm);line-height:1.65;margin-top:10px}
+.callout-warn{background:var(--warning-bg);border-left:3px solid var(--warning);color:#fcd34d}
+.callout-tip{background:var(--info-bg);border-left:3px solid var(--accent-dim);color:var(--accent)}
+.callout strong{font-weight:600}
+.done-btn{margin-top:16px;width:100%;padding:10px 16px;font-family:inherit;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .2s;min-height:44px}
+.done-btn:hover{border-color:var(--success);color:var(--success);background:var(--success-bg)}
+.block.is-done .done-btn:hover{border-color:var(--error);color:var(--error);background:var(--error-bg)}
+#announce{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.offline-banner{display:none;background:var(--warning-bg);border-bottom:1px solid rgba(245,158,11,.3);padding:8px 20px;font-size:13px;color:#fcd34d;text-align:center}
+</style>
+</head>
+<body>
+
+<div id="announce" aria-live="polite" aria-atomic="true" role="status"></div>
+<div class="offline-banner" id="offline-banner" role="alert">You are offline — changes will sync when connection restores.</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" role="main" aria-label="Sign in">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon" aria-hidden="true">✍</div>
+      <div>
+        <div class="auth-logo-text">Academic Writing Guide</div>
+        <div class="auth-logo-sub">Engineering Journal · IMRaD</div>
+      </div>
+    </div>
+    <h1 class="auth-title" id="auth-heading">Sign in</h1>
+    <p class="auth-sub" id="auth-sub">Your progress is saved per account.</p>
+    <div class="auth-error" id="auth-error" role="alert"></div>
+    <div id="auth-fields">
+      <div class="field" id="name-field" style="display:none">
+        <label for="auth-name">Display name</label>
+        <input type="text" id="auth-name" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="auth-password">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+    </div>
+    <button class="btn btn-primary" id="auth-submit" onclick="submitAuth()">Sign in</button>
+    <div class="auth-divider">or</div>
+    <button class="btn btn-google" onclick="signInGoogle()" aria-label="Sign in with Google">
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+    <p class="auth-switch">
+      <span id="auth-switch-text">Don't have an account?</span>
+      <button onclick="toggleAuthMode()" id="auth-switch-btn">Create one</button>
+    </p>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app-screen">
+  <div class="app-shell">
+    <header>
+      <div class="header-top">
+        <div class="logo">
+          <div class="logo-icon" aria-hidden="true">✍</div>
+          <div>
+            <div class="logo-text">Academic Writing Guide</div>
+            <div class="logo-sub">Engineering Journal · IMRaD Structure</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <span id="sync-status" aria-live="polite" role="status">—</span>
+          <button class="signout-btn" onclick="signOut()" aria-label="Sign out">Sign out</button>
+        </div>
+      </div>
+      <div class="project-row">
+        <label for="project-name">Paper title:</label>
+        <input type="text" id="project-name" placeholder="e.g. Cross-ventilation in parallel canyons" aria-label="Paper title" autocomplete="off">
+      </div>
+      <nav aria-label="Sections" id="tab-nav" role="tablist"></nav>
+    </header>
+    <main id="main-panel" aria-live="polite" tabindex="-1"></main>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut as fbSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+/* ── Firebase config — replace with your project values ── */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDFm_wZayvK_i_VYrbISbN3Yqy2KuIrOdY",
+  authDomain:        "writing-guide-ece32.firebaseapp.com",
+  databaseURL:       "https://writing-guide-ece32-default-rtdb.firebaseio.com",
+  projectId:         "writing-guide-ece32",
+  storageBucket:     "writing-guide-ece32.firebasestorage.app",
+  messagingSenderId: "852299533372",
+  appId:             "1:852299533372:web:6564e4dc65087f93ba0739"
+};
+
+const app      = initializeApp(firebaseConfig);
+const auth     = getAuth(app);
+const db       = getDatabase(app);
+const provider = new GoogleAuthProvider();
+
+/* ── State ── */
+let state = { project:'', activeSec:0, open:{}, done:{} };
+let saveTimer = null;
+let isSignUp = false;
+let offlineTimer = null;
+
+/* ── Sections data ── */
+const SECTIONS = [
+  {
+    id:'intro', label:'Introduction', model:'CARS model',
+    desc:'Establishes the territory, the gap, and your contribution. Reviewers decide whether to keep reading here. Follow Swales\' CARS model: establish the territory → establish the niche → occupy the niche.',
+    blocks:[
+      { name:'Topic territory', tag:'required', q:'What is the broad domain this paper sits in?', hint:'Open with 2–3 sentences establishing the field and its real-world significance. This is not your paper — it is the field. Be specific: not "buildings" but "street-canyon ventilation in high-density urban districts."', checks:['Domain named and contextualised in practice or society','Real-world significance stated, not assumed','Scope appropriately bounded — not so broad it covers half a discipline'] },
+      { name:'Existing knowledge', tag:'required', q:'What do we already know, and what have prior studies collectively established?', hint:'Synthesise the literature in 1–2 focused paragraphs. Do not list studies — group them by what they collectively show. Use citations to support claims, not replace them. Move from general to specific.', checks:['Prior work grouped thematically, not chronologically','Key findings summarised in your own language','Every citation has a stated purpose — no orphaned references'], tip:'In CFD and built-environment journals, reviewers expect explicit citation of benchmark studies (e.g. AIJ, CODASC) that ground the field.' },
+      { name:'Research gap', tag:'required', q:'What is missing, contested, or unknown in the existing body of work?', hint:'This is the most critical paragraph. Identify a specific gap — not "more research is needed" but a precise blind spot. Use contrast language: "However…", "Despite…", "To date, no study has…"', checks:['Gap is specific and bounded — not a general call for more research','Justified with evidence from the literature just reviewed','Directly connected to the objective that follows'], warn:'Reviewers will reject papers with vague or unjustified gaps. If you struggle to write this paragraph, the research question itself may need sharpening.' },
+      { name:'Objective & contribution', tag:'required', q:'What does this paper do, and what new knowledge does it add?', hint:'State the objective directly: "This paper investigates…" Then state the contribution — what the reader will know after reading that they did not before. These are two different things: doing vs. adding.', checks:['Objective is one clear, bounded statement','Contribution is distinct from the objective','No vague phrases like "this paper explores" or "this study seeks to"'] },
+      { name:'Paper structure outline', tag:'optional', q:'How is the rest of the paper organised?', hint:'A brief paragraph (2–4 sentences) signposting the sections. Common in engineering journals, sometimes required by the journal template. Keep it functional: "Section 2 describes… Section 3 presents…"', checks:['All major sections named','Language functional, not elaborate','Placed as the final paragraph of the Introduction'] }
+    ]
+  },
+  {
+    id:'method', label:'Methodology', model:'Replicability standard',
+    desc:'Must be replicable. A reader should be able to reproduce your study from this section alone. Every choice needs justification, not just description.',
+    blocks:[
+      { name:'Objective restatement', tag:'required', q:'What exactly are you measuring or modelling, and why is this method appropriate?', hint:'A brief anchor sentence connecting the methodology to the research question. Example: "To quantify cross-ventilation potential in parallel-to-wind urban canyons, steady-state RANS CFD simulation was adopted."', checks:['Research question restated in one sentence','Method choice stated alongside the reason it fits','No detail yet — this is the framing sentence only'] },
+      { name:'Approach & justification', tag:'required', q:'Why did you choose this method over available alternatives?', hint:'Justify the approach explicitly. If you used CFD, explain why not wind tunnel or field measurement. Keep it to 3–5 sentences.', checks:['Method justified, not just described','At least one alternative mentioned and briefly discounted','Known limitations of the chosen approach acknowledged'], tip:'FCE and Building & Environment expect explicit justification for numerical over experimental approaches — cost, parametric flexibility, and domain control are standard reasons.' },
+      { name:'Case setup & domain', tag:'required', q:'What is the physical or computational geometry of your study?', hint:'Describe the domain: dimensions, canyon geometry (H, W, H/W ratios), wind direction, urban configuration. For CFD: inlet/outlet face, blockage ratio. Cross-reference a figure. Be precise with units.', checks:['All key geometric parameters stated with units','Wind direction and incidence angle defined','Blockage ratio stated if CFD','Figure or table cross-referenced'] },
+      { name:'Governing equations & model', tag:'required', q:'What mathematical model governs your simulation or analysis?', hint:'State the RANS equations (or equivalent), the turbulence closure model (e.g. SST k-ω, RNG k-ε), and key simplifying assumptions (steady-state, incompressible, isothermal). Cite the original model source, not just the software.', checks:['Governing equations named and cited to original source','Turbulence/closure model specified with rationale','Key assumptions stated explicitly'], warn:'Do not only cite the software. "OpenFOAM with SST k-ω" is insufficient — state what SST k-ω assumes and why it fits your flow regime.' },
+      { name:'Boundary conditions & solver', tag:'required', q:'What are the inlet, outlet, and wall BCs, and what solver settings were used?', hint:'Inlet: velocity profile (log-law or power-law, α, z₀, U_ref), TI, length scale. Outlet: zero-gradient or pressure. Ground/walls: wall function, roughness. Solver: algorithm (SIMPLE), discretisation schemes, convergence criteria.', checks:['Every boundary face accounted for','Inlet profile fully parameterised — not just "uniform velocity"','Convergence criterion stated quantitatively','Solver settings in a table if multiple cases'] },
+      { name:'Mesh description', tag:'required', q:'How was the mesh constructed, and is it sufficiently refined?', hint:'State: total cell count, mesh type, near-wall y⁺ target and achieved value, refinement regions. Report the mesh independence study across at least 3 mesh levels with a monitored variable.', checks:['Total cell count stated','Mesh type and generation tool named','y⁺ value reported','Mesh independence study with 3 levels and a monitored variable'], warn:'A missing or superficial mesh independence study is one of the most common CFD rejection reasons.' },
+      { name:'Validation', tag:'required', q:'How was the model validated against experimental or benchmark data?', hint:'State: the dataset used (e.g. CODASC, AIJ Benchmark), the metrics (RMSE, NMSE, FAC2, R²), and whether results met the acceptance threshold. Cite the benchmark source and the acceptance criteria separately.', checks:['Validation dataset named and cited','Metrics defined, not just plotted','Acceptance thresholds stated with citation','Results reported quantitatively — not "good agreement"'], warn:'"Results showed good agreement with experiments" will be challenged without exception. State the numbers: NMSE, FAC2, percentage deviation.' },
+      { name:'Parametric matrix', tag:'conditional', q:'What cases or parameters did you vary, and what is the rationale for the chosen range?', hint:'If your study varies H/W ratio, wind angle, street width etc., define the full matrix here. A table is usually clearest. State range, step size, rationale, and total simulation count.', checks:['All varied parameters listed with range and step size','Rationale for chosen range given','Total number of simulations stated','Fixed parameters also stated'] }
+    ]
+  },
+  {
+    id:'results', label:'Results', model:'Objective presentation',
+    desc:'Present findings objectively, without interpretation. No "this suggests", no mechanisms, no speculation — that is the Discussion\'s job.',
+    blocks:[
+      { name:'Results overview', tag:'required', q:'What is the overall pattern in your findings before presenting specifics?', hint:'Open with 1–2 orienting sentences stating what the results show collectively. This is a roadmap, not a conclusion. Example: "The simulations reveal a consistent inverse relationship between canyon aspect ratio and ventilation potential across all tested configurations."', checks:['High-level pattern stated in 1–2 sentences','No interpretation or mechanism offered yet','Sets up the order of the specific results that follow'] },
+      { name:'Primary findings', tag:'required', q:'What are the main quantitative results?', hint:'Present key results in order of importance. Each finding must be stated precisely with units, statistical measures, and figure/table references. Avoid interpretive language — let the data speak.', checks:['Each major finding stated quantitatively with units','Every quantitative claim references a figure or table','No interpretive or evaluative language used','Uncertainty or scatter noted where relevant'] },
+      { name:'Trends & relationships', tag:'required', q:'How do your variables relate to each other across cases?', hint:'Describe relationships with direction and magnitude. For regression: state R², equation, and nature of the relationship. For parametric studies: describe how output changes with each input across the tested range.', checks:['Both direction and magnitude of relationships stated','Regression equation and R² included if applicable','Non-linearities, inflection points, or thresholds noted','Outliers identified (not explained yet)'], tip:'A single figure showing the output variable across H/W ratios with a trend line communicates the relationship more efficiently than a data table alone.' },
+      { name:'Secondary findings', tag:'conditional', q:'What supporting findings contextualise your primary results?', hint:'Present secondary results (flow patterns, pressure distributions, recirculation zones) that support or enrich the main findings. Keep these concise.', checks:['Supporting findings explicitly linked to which primary finding they support','Not presented as separate major contributions','Concisely reported — a paragraph, not a section'] },
+      { name:'Unexpected / null results', tag:'conditional', q:'Did any results contradict expectations or show no significant effect?', hint:'Null or unexpected results must be reported. Note them here without explanation — the Discussion is where you interpret why they occurred.', checks:['Unexpected results reported honestly and clearly','Not buried at the end of a paragraph','Significance (or lack thereof) stated quantitatively'], warn:'Omitting null or inconvenient results is selective reporting — a research integrity issue, not just a writing choice.' }
+    ]
+  },
+  {
+    id:'discussion', label:'Discussion', model:'Interpret & contextualise',
+    desc:'Interpret, contextualise, and situate your findings. Answer the "so what?" question. Move from specific findings to broader implications. Do not introduce new data here.',
+    blocks:[
+      { name:'Restatement of findings', tag:'required', q:'In interpretive language, what were your most important findings?', hint:'Open with 1–2 sentences restating primary findings with interpretive framing. Do not copy from Results — paraphrase: "The results demonstrate that…" This re-anchors the reader before interpretation begins.', checks:['Key findings restated with interpretive framing, not copied verbatim','No new data introduced','Sets up the logical flow of the discussion that follows'] },
+      { name:'Interpretation of findings', tag:'required', q:'What physical or theoretical mechanisms explain why your results occurred?', hint:'Explain the mechanism behind each finding. Why does ACH increase as H/W decreases? What aerodynamic process drives the pattern? Refer to flow visualisations (streamlines, pressure fields) as evidence.', checks:['Each primary finding has a proposed physical mechanism','Mechanisms supported by data, visualisation, or established theory','Physical reasoning given — not just statistical pattern description'] },
+      { name:'Comparison with literature', tag:'required', q:'How do your findings compare — quantitatively — to prior work?', hint:'Compare your quantitative results to those of cited studies. If you agree, say so and cite. If you disagree, propose why (different geometry, Re, boundary conditions). Engage with studies, do not just list them.', checks:['At least 2–3 prior studies directly compared with numbers','Both agreements and disagreements addressed','Disagreements explained with a proposed reason, not dismissed'], tip:'Reviewers who authored the prior work you cite will read this paragraph carefully. Be precise in disagreement and respectful in tone.' },
+      { name:'Practical implications', tag:'required', q:'What should practitioners or policymakers take from this work?', hint:'Translate findings into actionable implications. For urban canyon CFD: what does this mean for street width standards, building height regulations, or urban heat island mitigation? Be specific.', checks:['Implications tied directly to specific, named findings','Audience identified (urban planners, building code committees, etc.)','Strength matched to evidence — not overstated'] },
+      { name:'Limitations', tag:'required', q:'What are the boundaries of validity of your findings?', hint:'State limitations honestly: steady-state assumption, isothermal conditions, simplified geometry, validation dataset constraints, range of H/W tested. For each, note its likely effect on results.', checks:['All major methodological limitations stated explicitly','Likely direction of effect for each limitation discussed','Tone is matter-of-fact, not defensive'], warn:'Limitations a reviewer identifies before you do will undermine confidence in the paper. Anticipate the three most obvious criticisms and address them here.' },
+      { name:'Future work', tag:'optional', q:'What specific research directions follow directly from your findings?', hint:'Suggest 2–3 specific future directions. Name the specific variable, configuration, or method that should be explored and why. Avoid "further research is needed."', checks:['Each suggestion is specific — a named variable or method','Directly motivated by a finding or limitation','Not over-promised'] }
+    ]
+  },
+  {
+    id:'conclusion', label:'Conclusion', model:'Concise closure',
+    desc:'Concise and self-contained. No new information, no new figures, no new citations (as a rule). A reader who skips to the Conclusion should understand what was done, found, and why it matters.',
+    blocks:[
+      { name:'Study purpose restatement', tag:'required', q:'In one sentence, what did this study set out to do?', hint:'Restate the objective as a completion frame. "This study investigated X in order to Y." One sentence — not two or three.', checks:['One sentence only','Frames the work as complete, not ongoing','No new framing or terminology not used earlier'] },
+      { name:'Specific conclusions', tag:'required', q:'What are the specific, quantified conclusions?', hint:'Present 3–5 conclusions, each quantified where possible: not "ventilation improved with wider streets" but "ACH increased by 34% as H/W decreased from 2.0 to 0.5 under perpendicular wind approach." Every claim must be traceable directly to the Results.', checks:['Each conclusion quantified where data allow','Each claim matches a finding in the Results exactly','No interpretation or mechanism — just findings','3–5 conclusions, not an exhaustive list'], warn:'Conclusions stated more strongly than the Results section supports is the most common late-stage reviewer complaint.' },
+      { name:'Practical takeaways', tag:'required', q:'What should a practitioner or policymaker concretely do with these findings?', hint:'2–3 sentences connecting findings directly to practice. This can mirror the Discussion implications but should be more direct — the paper\'s closing "here is what to do with this" statement.', checks:['Specific and actionable — not "can inform design"','Strength matched to evidence','Audience named or clearly implied'] },
+      { name:'Limitations & next steps', tag:'optional', q:'Does this journal expect a closing nod to limitations and future work?', hint:'Some journals expect this; others do not if the Discussion covered it fully. Keep it to 1–2 sentences maximum. Check the target journal\'s published papers to confirm the convention.', checks:['One or two sentences only','Not repetitive of the Discussion section','Confirmed this is the journal\'s convention'] }
+    ]
+  }
+];
+
+/* ── Sync helpers ── */
+function showSync(s, msg='') {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = { loading:'↻ Saving…', synced:'✓ Saved', error:`⚠ ${msg||'Error'}`, offline:'✕ Offline' };
+  el.textContent = map[s] || s;
+  el.className = `sync-${s}`;
+}
+
+function userDataRef(uid) {
+  return ref(db, `writingguide/users/${uid}/data`);
+}
+
+async function loadFromCloud(uid) {
+  showSync('loading');
+  const timer = setTimeout(() => showSync('offline'), 8000);
+  try {
+    const snap = await get(userDataRef(uid));
+    clearTimeout(timer);
+    if (snap.exists()) {
+      const saved = snap.val();
+      if (saved.project   !== undefined) state.project   = saved.project;
+      if (saved.done)                    state.done      = saved.done;
+      if (saved.open)                    state.open      = saved.open;
+      if (saved.activeSec !== undefined) state.activeSec = saved.activeSec;
+      const pn = document.getElementById('project-name');
+      if (pn) pn.value = state.project || '';
+    }
+    showSync('synced');
+  } catch(e) {
+    clearTimeout(timer);
+    showSync('error', e.message);
+  }
+  renderAll();
+}
+
+function scheduleSave(uid) {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveToCloud(uid), 900);
+}
+
+async function saveToCloud(uid) {
+  showSync('loading');
+  try {
+    await set(userDataRef(uid), {
+      project:   state.project,
+      done:      state.done,
+      open:      state.open,
+      activeSec: state.activeSec
+    });
+    showSync('synced');
+  } catch(e) {
+    showSync('error', e.message);
+  }
+}
+
+/* ── Auth state ── */
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display  = 'block';
+    loadFromCloud(user.uid);
+    const pn = document.getElementById('project-name');
+    if (pn) {
+      pn.addEventListener('input', () => {
+        state.project = pn.value;
+        scheduleSave(user.uid);
+      });
+    }
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display  = 'none';
+  }
+});
+
+/* Handle Google redirect result on page load */
+getRedirectResult(auth).catch(() => {});
+
+/* ── Auth UI ── */
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideAuthError() {
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+window.toggleAuthMode = function() {
+  isSignUp = !isSignUp;
+  document.getElementById('auth-heading').textContent    = isSignUp ? 'Create account' : 'Sign in';
+  document.getElementById('auth-sub').textContent        = isSignUp ? 'Your progress will be saved to your account.' : 'Your progress is saved per account.';
+  document.getElementById('auth-submit').textContent     = isSignUp ? 'Create account' : 'Sign in';
+  document.getElementById('auth-switch-text').textContent= isSignUp ? 'Already have an account?' : 'Don\'t have an account?';
+  document.getElementById('auth-switch-btn').textContent = isSignUp ? 'Sign in' : 'Create one';
+  document.getElementById('name-field').style.display    = isSignUp ? 'block' : 'none';
+  document.getElementById('auth-password').autocomplete  = isSignUp ? 'new-password' : 'current-password';
+  hideAuthError();
+};
+
+window.submitAuth = async function() {
+  hideAuthError();
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  if (!email || !pass) { showAuthError('Please enter email and password.'); return; }
+  try {
+    if (isSignUp) {
+      await createUserWithEmailAndPassword(auth, email, pass);
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found':       'No account found with this email.',
+      'auth/wrong-password':       'Incorrect password.',
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/weak-password':        'Password must be at least 6 characters.',
+      'auth/invalid-email':        'Please enter a valid email address.',
+      'auth/invalid-credential':   'Email or password is incorrect.'
+    };
+    showAuthError(msgs[e.code] || e.message);
+  }
+};
+
+window.signInGoogle = async function() {
+  hideAuthError();
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    if (e.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, provider);
+    } else {
+      showAuthError(e.message);
+    }
+  }
+};
+
+window.signOut = async function() {
+  await fbSignOut(auth);
+  state = { project:'', activeSec:0, open:{}, done:{} };
+};
+
+/* ── Render ── */
+function getSectionProgress(si) {
+  const sec = SECTIONS[si];
+  const total = sec.blocks.length;
+  const completed = sec.blocks.filter((_,bi) => state.done[`${si}-${bi}`]).length;
+  return { completed, total, pct: Math.round((completed/total)*100) };
+}
+
+function renderAll() { renderNav(); renderSection(); }
+
+function renderNav() {
+  const nav = document.getElementById('tab-nav');
+  if (!nav) return;
+  nav.innerHTML = SECTIONS.map((sec,si) => {
+    const { completed } = getSectionProgress(si);
+    const active = si === state.activeSec;
+    const badge = completed > 0 ? `<span class="tab-badge" aria-label="${completed} paragraphs done">${completed}</span>` : '';
+    return `<button class="tab-btn" role="tab" aria-selected="${active}" onclick="switchSection(${si})">${sec.label}${badge}</button>`;
+  }).join('');
+}
+
+function renderSection() {
+  const panel = document.getElementById('main-panel');
+  if (!panel) return;
+  const si  = state.activeSec;
+  const sec = SECTIONS[si];
+  const { completed, total, pct } = getSectionProgress(si);
+
+  let html = `
+    <div class="section-meta">
+      <h2 class="section-name">${sec.label}</h2>
+      <span class="section-model">${sec.model}</span>
+    </div>
+    <p class="section-desc">${sec.desc}</p>
+    <div class="progress-row">
+      <div class="progress-track" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${sec.label} section progress">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <span class="progress-label">${completed}/${total} done</span>
+    </div>
+    <div class="blocks" role="list">`;
+
+  sec.blocks.forEach((blk, bi) => {
+    const key    = `${si}-${bi}`;
+    const isDone = !!state.done[key];
+    const isOpen = !!state.open[key];
+    const tagCls = blk.tag==='required'?'tag-required':blk.tag==='conditional'?'tag-conditional':'tag-optional';
+    const checkSvg = isDone
+      ? `<svg width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true"><path d="M1 4L3.5 6.5L9 1" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      : '';
+    const checks = blk.checks.map(c=>`<li><div class="check-icon" aria-hidden="true"><svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3L3 5L7 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>${c}</li>`).join('');
+    const warnHtml = blk.warn ? `<div class="callout callout-warn" role="note"><strong>⚠ Watch out:</strong> ${blk.warn}</div>` : '';
+    const tipHtml  = blk.tip  ? `<div class="callout callout-tip"  role="note"><strong>💡 Tip:</strong> ${blk.tip}</div>`  : '';
+
+    html += `
+      <div class="block${isDone?' is-done':''}" role="listitem">
+        <button class="block-trigger" aria-expanded="${isOpen}" aria-controls="body-${key}" onclick="toggleBlock('${key}')">
+          <span class="block-num" aria-hidden="true">${bi+1}</span>
+          <span class="block-name">${blk.name}</span>
+          <span class="block-tag ${tagCls}">${blk.tag}</span>
+          <div class="done-check" aria-label="${isDone?'Done':'Not done'}">${checkSvg}</div>
+          <span class="chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="block-body${isOpen?' is-open':''}" id="body-${key}" role="region">
+          <p class="writing-q">${blk.q}</p>
+          <p class="writing-hint">${blk.hint}</p>
+          <ul class="checklist" aria-label="Reviewer expectations">${checks}</ul>
+          ${warnHtml}${tipHtml}
+          <button class="done-btn" onclick="toggleDone('${key}')" aria-label="${isDone?'Reopen this paragraph':'Mark paragraph as done'}">
+            ${isDone ? '↩ Reopen this paragraph' : '✓ Mark paragraph as done'}
+          </button>
+        </div>
+      </div>`;
+  });
+
+  html += `</div>`;
+  panel.innerHTML = html;
+}
+
+/* ── Interactions exposed to onclick ── */
+window.switchSection = function(idx) {
+  state.activeSec = idx;
+  renderAll();
+  const user = auth.currentUser;
+  if (user) scheduleSave(user.uid);
+  const announce = document.getElementById('announce');
+  if (announce) announce.textContent = `Switched to ${SECTIONS[idx].label}`;
+};
+
+window.toggleBlock = function(key) {
+  state.open[key] = !state.open[key];
+  renderSection();
+};
+
+window.toggleDone = function(key) {
+  state.done[key] = !state.done[key];
+  const user = auth.currentUser;
+  if (user) scheduleSave(user.uid);
+  renderAll();
+  const [si,bi] = key.split('-').map(Number);
+  const announce = document.getElementById('announce');
+  if (announce) announce.textContent = state.done[key]
+    ? `${SECTIONS[si].blocks[bi].name} marked as done.`
+    : `${SECTIONS[si].blocks[bi].name} reopened.`;
+};
+
+/* ── Enter key on auth ── */
+document.getElementById('auth-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.submitAuth();
+});
+
+/* ── Online/offline detection ── */
+window.addEventListener('offline', () => {
+  document.getElementById('offline-banner').style.display = 'block';
+  showSync('offline');
+});
+window.addEventListener('online', () => {
+  document.getElementById('offline-banner').style.display = 'none';
+  const user = auth.currentUser;
+  if (user) saveToCloud(user.uid);
+});
+</script>
+</body>
+</html>
