@@ -119,6 +119,10 @@ main{padding:28px 0 60px}
 .block.is-done .done-check{background:var(--success);border-color:var(--success)}
 .block-body{display:none;border-top:1px solid var(--border);padding:20px 20px 16px;background:var(--bg-secondary)}
 .block-body.is-open{display:block}
+.block-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+@media(max-width:760px){.block-grid{grid-template-columns:1fr;gap:16px}}
+.block-instructions{min-width:0}
+.block-writing{min-width:0;display:flex;flex-direction:column}
 .writing-q{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:10px;line-height:1.5}
 .writing-hint{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:16px}
 .checklist{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
@@ -132,10 +136,11 @@ main{padding:28px 0 60px}
 .done-btn:hover{border-color:var(--success);color:var(--success);background:var(--success-bg)}
 .block.is-done .done-btn:hover{border-color:var(--error);color:var(--error);background:var(--error-bg)}
 .write-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;display:block}
-.write-area{width:100%;min-height:140px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;transition:border-color .2s}
+.write-area{width:100%;flex:1;min-height:260px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;transition:border-color .2s}
 .write-area:focus{border-color:var(--accent);outline:none}
 .write-area::placeholder{color:var(--text-muted)}
 .write-count{font-size:12px;color:var(--text-muted);text-align:right;margin-top:4px}
+@media(max-width:760px){.write-area{min-height:160px}}
 
 /* ── Generate section ── */
 .generate-section{margin-top:28px;padding-top:24px;border-top:1px solid var(--border)}
@@ -528,12 +533,18 @@ function renderSection() {
           <span class="chevron" aria-hidden="true">▾</span>
         </button>
         <div class="block-body${isOpen?' is-open':''}" id="body-${key}" role="region">
-          <p class="writing-q">${blk.q}</p>
-          <p class="writing-hint">${blk.hint}</p>
-          <ul class="checklist" aria-label="Reviewer expectations">${checks}</ul>
-          ${warnHtml}${tipHtml}
-          <label class="write-label" for="write-${key}">Your writing</label>
-          <textarea class="write-area" id="write-${key}" placeholder="Write your paragraph for this part here…" oninput="updateText('${key}', this.value)">${escapeHtml(state.text[key]||'')}</textarea>
+          <div class="block-grid">
+            <div class="block-instructions">
+              <p class="writing-q">${blk.q}</p>
+              <p class="writing-hint">${blk.hint}</p>
+              <ul class="checklist" aria-label="Reviewer expectations">${checks}</ul>
+              ${warnHtml}${tipHtml}
+            </div>
+            <div class="block-writing">
+              <label class="write-label" for="write-${key}">Your writing</label>
+              <textarea class="write-area" id="write-${key}" placeholder="Write your paragraph for this part here…" oninput="updateText('${key}', this.value)">${escapeHtml(state.text[key]||'')}</textarea>
+            </div>
+          </div>
           <button class="done-btn" onclick="toggleDone('${key}')" aria-label="${isDone?'Reopen this paragraph':'Mark paragraph as done'}">
             ${isDone ? '↩ Reopen this paragraph' : '✓ Mark paragraph as done'}
           </button>
