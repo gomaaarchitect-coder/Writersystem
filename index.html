@@ -131,6 +131,29 @@ main{padding:28px 0 60px}
 .done-btn{margin-top:16px;width:100%;padding:10px 16px;font-family:inherit;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .2s;min-height:44px}
 .done-btn:hover{border-color:var(--success);color:var(--success);background:var(--success-bg)}
 .block.is-done .done-btn:hover{border-color:var(--error);color:var(--error);background:var(--error-bg)}
+.write-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;display:block}
+.write-area{width:100%;min-height:140px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;transition:border-color .2s}
+.write-area:focus{border-color:var(--accent);outline:none}
+.write-area::placeholder{color:var(--text-muted)}
+.write-count{font-size:12px;color:var(--text-muted);text-align:right;margin-top:4px}
+
+/* ── Generate section ── */
+.generate-section{margin-top:28px;padding-top:24px;border-top:1px solid var(--border)}
+.generate-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 16px;font-family:inherit;font-size:14px;font-weight:600;border:1px solid var(--accent-dim);border-radius:var(--radius-sm);background:var(--accent-muted);color:var(--accent);cursor:pointer;transition:all .2s;min-height:48px}
+.generate-btn:hover{background:var(--accent);color:#0d1b2a}
+.generate-output-wrap{margin-top:16px;display:none}
+.generate-output-wrap.is-visible{display:block}
+.generate-output-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.generate-output-title{font-size:13px;font-weight:600;color:var(--text-secondary)}
+.copy-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .2s;min-height:32px}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.copy-btn.copied{border-color:var(--success);color:var(--success)}
+.generate-output{width:100%;min-height:200px;padding:14px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;white-space:pre-wrap}
+.full-paper-row{margin:24px 0;padding:20px;background:var(--bg-card);border:1px solid var(--accent-dim);border-radius:var(--radius-lg)}
+.full-paper-row .generate-btn{background:var(--accent);color:#0d1b2a}
+.full-paper-row .generate-btn:hover{background:#00c4e6}
+.full-paper-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.full-paper-sub{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
 #announce{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .offline-banner{display:none;background:var(--warning-bg);border-bottom:1px solid rgba(245,158,11,.3);padding:8px 20px;font-size:13px;color:#fcd34d;text-align:center}
 </style>
@@ -230,7 +253,7 @@ const db       = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
 /* ── State ── */
-let state = { project:'', activeSec:0, open:{}, done:{} };
+let state = { project:'', activeSec:0, open:{}, done:{}, text:{} };
 let saveTimer = null;
 let isSignUp = false;
 let offlineTimer = null;
@@ -321,6 +344,7 @@ async function loadFromCloud(uid) {
       if (saved.project   !== undefined) state.project   = saved.project;
       if (saved.done)                    state.done      = saved.done;
       if (saved.open)                    state.open      = saved.open;
+      if (saved.text)                    state.text      = saved.text;
       if (saved.activeSec !== undefined) state.activeSec = saved.activeSec;
       const pn = document.getElementById('project-name');
       if (pn) pn.value = state.project || '';
@@ -345,6 +369,7 @@ async function saveToCloud(uid) {
       project:   state.project,
       done:      state.done,
       open:      state.open,
+      text:      state.text,
       activeSec: state.activeSec
     });
     showSync('synced');
@@ -436,7 +461,7 @@ window.signInGoogle = async function() {
 
 window.signOut = async function() {
   await fbSignOut(auth);
-  state = { project:'', activeSec:0, open:{}, done:{} };
+  state = { project:'', activeSec:0, open:{}, done:{}, text:{} };
 };
 
 /* ── Render ── */
@@ -507,6 +532,8 @@ function renderSection() {
           <p class="writing-hint">${blk.hint}</p>
           <ul class="checklist" aria-label="Reviewer expectations">${checks}</ul>
           ${warnHtml}${tipHtml}
+          <label class="write-label" for="write-${key}">Your writing</label>
+          <textarea class="write-area" id="write-${key}" placeholder="Write your paragraph for this part here…" oninput="updateText('${key}', this.value)">${escapeHtml(state.text[key]||'')}</textarea>
           <button class="done-btn" onclick="toggleDone('${key}')" aria-label="${isDone?'Reopen this paragraph':'Mark paragraph as done'}">
             ${isDone ? '↩ Reopen this paragraph' : '✓ Mark paragraph as done'}
           </button>
@@ -515,6 +542,45 @@ function renderSection() {
   });
 
   html += `</div>`;
+
+  html += `
+    <div class="generate-section">
+      <button class="generate-btn" onclick="generateSection(${si})">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Generate ${sec.label} text
+      </button>
+      <div class="generate-output-wrap" id="gen-wrap-${si}">
+        <div class="generate-output-head">
+          <span class="generate-output-title">${sec.label} — compiled text</span>
+          <button class="copy-btn" id="copy-btn-${si}" onclick="copyOutput('gen-output-${si}','copy-btn-${si}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V5a1.5 1.5 0 0 1 1.5-1.5H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Copy
+          </button>
+        </div>
+        <textarea class="generate-output" id="gen-output-${si}" readonly></textarea>
+      </div>
+    </div>`;
+
+  html += `
+    <div class="full-paper-row">
+      <div class="full-paper-title">Generate full paper</div>
+      <div class="full-paper-sub">Compile everything written across all sections into a single document.</div>
+      <button class="generate-btn" onclick="generateFullPaper()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 3v5h5M19 3l-5 5M5 21V11a2 2 0 0 1 2-2h7l5 5v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Generate full paper
+      </button>
+      <div class="generate-output-wrap" id="gen-wrap-full">
+        <div class="generate-output-head">
+          <span class="generate-output-title">Full paper — compiled text</span>
+          <button class="copy-btn" id="copy-btn-full" onclick="copyOutput('gen-output-full','copy-btn-full')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V5a1.5 1.5 0 0 1 1.5-1.5H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Copy
+          </button>
+        </div>
+        <textarea class="generate-output" id="gen-output-full" readonly style="min-height:320px"></textarea>
+      </div>
+    </div>`;
+
   panel.innerHTML = html;
 }
 
@@ -531,6 +597,76 @@ window.switchSection = function(idx) {
 window.toggleBlock = function(key) {
   state.open[key] = !state.open[key];
   renderSection();
+};
+
+window.updateText = function(key, value) {
+  state.text[key] = value;
+  const user = auth.currentUser;
+  if (user) scheduleSave(user.uid);
+  const [si] = key.split('-').map(Number);
+  renderNav(); // refresh badges if needed (no-op for text, but keeps nav count logic safe)
+  void si;
+};
+
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function compileSection(si, includeHeader=true) {
+  const sec = SECTIONS[si];
+  let body = '';
+  sec.blocks.forEach((blk, bi) => {
+    const key = `${si}-${bi}`;
+    const txt = (state.text[key]||'').trim();
+    if (!txt) return;
+    body += `${blk.name}\n${txt}\n\n`;
+  });
+  if (!body) return '';
+  if (!includeHeader) return body.trim();
+  return `${sec.label.toUpperCase()}\n${'='.repeat(sec.label.length)}\n\n${body}`.trim();
+}
+
+window.generateSection = function(si) {
+  const sec = SECTIONS[si];
+  const out = compileSection(si);
+  const wrap = document.getElementById(`gen-wrap-${si}`);
+  const area = document.getElementById(`gen-output-${si}`);
+  area.value = out || `No writing yet for ${sec.label}. Fill in the text boxes above first.`;
+  wrap.classList.add('is-visible');
+  const announce = document.getElementById('announce');
+  if (announce) announce.textContent = `${sec.label} text generated.`;
+};
+
+window.generateFullPaper = function() {
+  let out = '';
+  const title = state.project ? state.project.trim() : '';
+  if (title) out += `${title}\n${'='.repeat(title.length)}\n\n`;
+  SECTIONS.forEach((sec, si) => {
+    const secText = compileSection(si);
+    if (secText) out += secText + '\n\n';
+  });
+  out = out.trim();
+  const wrap = document.getElementById('gen-wrap-full');
+  const area = document.getElementById('gen-output-full');
+  area.value = out || 'No writing yet. Fill in the text boxes in each section first.';
+  wrap.classList.add('is-visible');
+  const announce = document.getElementById('announce');
+  if (announce) announce.textContent = `Full paper text generated.`;
+};
+
+window.copyOutput = async function(areaId, btnId) {
+  const area = document.getElementById(areaId);
+  const btn = document.getElementById(btnId);
+  try {
+    await navigator.clipboard.writeText(area.value);
+  } catch(e) {
+    area.select();
+    document.execCommand('copy');
+  }
+  btn.classList.add('copied');
+  const orig = btn.innerHTML;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied`;
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 1800);
 };
 
 window.toggleDone = function(key) {
