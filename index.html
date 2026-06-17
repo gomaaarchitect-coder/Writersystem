@@ -81,9 +81,37 @@ header{padding:24px 0 0;border-bottom:1px solid var(--border)}
 .signout-btn:hover{border-color:var(--error);color:var(--error)}
 .project-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
 .project-row label{font-size:13px;color:var(--text-muted);white-space:nowrap}
-#project-name{font-family:inherit;font-size:14px;font-weight:500;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text-primary);padding:4px 6px;min-width:220px;transition:border-color .2s}
-#project-name:focus{border-bottom-color:var(--accent);outline:none}
+#project-name{font-family:inherit;font-size:14px;font-weight:500;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);padding:7px 10px;min-width:280px;flex:1;transition:border-color .2s}
+#project-name:focus{border-color:var(--accent);outline:none}
 #project-name::placeholder{color:var(--text-muted)}
+.project-btns{display:flex;gap:6px;margin-left:auto}
+.proj-btn{font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-family:inherit;min-height:32px;white-space:nowrap;transition:all .2s}
+.proj-btn:hover{border-color:var(--accent);color:var(--accent)}
+.proj-btn-new{border-color:var(--accent-dim);color:var(--accent)}
+.proj-btn-new:hover{background:var(--accent);color:#0d1b2a}
+/* Project switcher modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:480px;overflow:hidden}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:15px;font-weight:600}
+.modal-close{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px;border-radius:var(--radius-sm)}
+.modal-close:hover{color:var(--text-primary)}
+.modal-body{padding:20px;max-height:60vh;overflow-y:auto}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.proj-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.proj-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s;background:var(--bg-secondary)}
+.proj-item:hover{border-color:var(--accent);background:var(--accent-muted)}
+.proj-item.is-active{border-color:var(--accent);background:var(--accent-muted)}
+.proj-item-name{flex:1;font-size:14px;font-weight:500}
+.proj-item-meta{font-size:11px;color:var(--text-muted)}
+.proj-item-del{background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px 6px;border-radius:var(--radius-sm);font-size:14px;line-height:1}
+.proj-item-del:hover{color:var(--error)}
+.new-proj-row{display:flex;gap:8px}
+.new-proj-row input{flex:1;padding:9px 11px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:inherit;font-size:14px}
+.new-proj-row input:focus{border-color:var(--accent);outline:none}
+.new-proj-row input::placeholder{color:var(--text-muted)}
+.new-proj-add{padding:9px 16px;background:var(--accent);color:#0d1b2a;border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.new-proj-add:hover{background:#00c4e6}
 nav[aria-label="Sections"]{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 nav[aria-label="Sections"]::-webkit-scrollbar{display:none}
 .tab-btn{padding:10px 18px;font-size:14px;font-weight:500;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;min-height:44px;font-family:inherit}
@@ -119,7 +147,7 @@ main{padding:28px 0 60px}
 .block.is-done .done-check{background:var(--success);border-color:var(--success)}
 .block-body{display:none;border-top:1px solid var(--border);padding:20px 20px 16px;background:var(--bg-secondary)}
 .block-body.is-open{display:block}
-.block-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.block-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:24px;align-items:start}
 @media(max-width:760px){.block-grid{grid-template-columns:1fr;gap:16px}}
 .block-instructions{min-width:0}
 .block-writing{min-width:0;display:flex;flex-direction:column}
@@ -228,10 +256,31 @@ main{padding:28px 0 60px}
       <div class="project-row">
         <label for="project-name">Paper title:</label>
         <input type="text" id="project-name" placeholder="e.g. Cross-ventilation in parallel canyons" aria-label="Paper title" autocomplete="off">
+        <div class="project-btns">
+          <button class="proj-btn" onclick="openProjectSwitcher()" aria-label="Switch project">📂 Projects</button>
+          <button class="proj-btn proj-btn-new" onclick="newProject()" aria-label="New project">+ New paper</button>
+        </div>
       </div>
       <nav aria-label="Sections" id="tab-nav" role="tablist"></nav>
     </header>
     <main id="main-panel" aria-live="polite" tabindex="-1"></main>
+  </div>
+</div>
+
+<!-- Project switcher modal -->
+<div id="project-modal" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="if(event.target===this)closeProjectSwitcher()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-title">Your papers</span>
+      <button class="modal-close" onclick="closeProjectSwitcher()" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="proj-list" id="proj-list"></div>
+      <div class="new-proj-row">
+        <input type="text" id="new-proj-input" placeholder="New paper title…" autocomplete="off" onkeydown="if(event.key==='Enter')addProject()">
+        <button class="new-proj-add" onclick="addProject()">Add</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -259,9 +308,159 @@ const provider = new GoogleAuthProvider();
 
 /* ── State ── */
 let state = { project:'', activeSec:0, open:{}, done:{}, text:{} };
+let projects = {};      // { [projectId]: { title, state } }
+let activeProjectId = null;
 let saveTimer = null;
 let isSignUp = false;
 let offlineTimer = null;
+
+/* ── Project helpers ── */
+function generateId() { return 'p' + Date.now() + Math.random().toString(36).slice(2,6); }
+
+function allProjectsRef(uid) { return ref(db, `writingguide/users/${uid}/projects`); }
+function projectRef(uid, pid) { return ref(db, `writingguide/users/${uid}/projects/${pid}`); }
+
+async function loadProjects(uid) {
+  try {
+    const snap = await get(allProjectsRef(uid));
+    if (snap.exists()) {
+      projects = snap.val();
+    } else {
+      projects = {};
+    }
+    // If there's a legacy "data" node, migrate it as the first project
+    const legacySnap = await get(ref(db, `writingguide/users/${uid}/data`));
+    if (legacySnap.exists() && Object.keys(projects).length === 0) {
+      const leg = legacySnap.val();
+      const pid = generateId();
+      projects[pid] = { title: leg.project || 'Untitled paper', state: leg };
+      await set(allProjectsRef(uid), projects);
+    }
+    // Pick which project to activate
+    const ids = Object.keys(projects);
+    if (ids.length === 0) {
+      // create a blank project
+      const pid = generateId();
+      projects[pid] = { title: '', state: { project:'', activeSec:0, open:{}, done:{}, text:{} } };
+      await set(allProjectsRef(uid), projects);
+      ids.push(pid);
+    }
+    // Try to restore last active project from localStorage
+    const last = localStorage.getItem('lastProjectId');
+    activeProjectId = (last && projects[last]) ? last : ids[0];
+    loadActiveProject();
+  } catch(e) {
+    showSync('error', e.message);
+  }
+}
+
+function loadActiveProject() {
+  const proj = projects[activeProjectId];
+  if (!proj) return;
+  const s = proj.state || {};
+  state = {
+    project:   proj.title || s.project || '',
+    activeSec: s.activeSec || 0,
+    open:      s.open  || {},
+    done:      s.done  || {},
+    text:      s.text  || {}
+  };
+  const pn = document.getElementById('project-name');
+  if (pn) pn.value = state.project;
+  localStorage.setItem('lastProjectId', activeProjectId);
+  renderAll();
+  showSync('synced');
+}
+
+async function saveCurrentProject(uid) {
+  if (!activeProjectId) return;
+  projects[activeProjectId] = {
+    title: state.project,
+    state: { ...state }
+  };
+  showSync('loading');
+  try {
+    await set(projectRef(uid, activeProjectId), projects[activeProjectId]);
+    showSync('synced');
+  } catch(e) {
+    showSync('error', e.message);
+  }
+}
+
+window.openProjectSwitcher = function() {
+  renderProjectList();
+  document.getElementById('project-modal').style.display = 'flex';
+  document.getElementById('new-proj-input').focus();
+};
+
+window.closeProjectSwitcher = function() {
+  document.getElementById('project-modal').style.display = 'none';
+};
+
+function renderProjectList() {
+  const list = document.getElementById('proj-list');
+  const ids = Object.keys(projects);
+  if (ids.length === 0) { list.innerHTML = '<p style="font-size:13px;color:var(--text-muted)">No papers yet.</p>'; return; }
+  list.innerHTML = ids.map(pid => {
+    const p = projects[pid];
+    const active = pid === activeProjectId;
+    const done = p.state && p.state.done ? Object.values(p.state.done).filter(Boolean).length : 0;
+    return `<div class="proj-item${active?' is-active':''}" onclick="switchProject('${pid}')">
+      <span class="proj-item-name">${escapeHtml(p.title||'Untitled paper')}</span>
+      <span class="proj-item-meta">${done} blocks done</span>
+      <button class="proj-item-del" onclick="event.stopPropagation();deleteProject('${pid}')" aria-label="Delete paper" title="Delete">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+window.switchProject = async function(pid) {
+  const user = auth.currentUser;
+  if (user) await saveCurrentProject(user.uid);
+  activeProjectId = pid;
+  loadActiveProject();
+  closeProjectSwitcher();
+};
+
+window.newProject = function() {
+  openProjectSwitcher();
+  setTimeout(() => document.getElementById('new-proj-input').focus(), 50);
+};
+
+window.addProject = async function() {
+  const inp = document.getElementById('new-proj-input');
+  const title = inp.value.trim() || 'Untitled paper';
+  inp.value = '';
+  const user = auth.currentUser;
+  if (user) await saveCurrentProject(user.uid);
+  const pid = generateId();
+  projects[pid] = { title, state: { project: title, activeSec:0, open:{}, done:{}, text:{} } };
+  activeProjectId = pid;
+  if (user) await set(projectRef(user.uid, pid), projects[pid]);
+  loadActiveProject();
+  closeProjectSwitcher();
+};
+
+window.deleteProject = async function(pid) {
+  if (!confirm('Delete this paper and all its writing? This cannot be undone.')) return;
+  const user = auth.currentUser;
+  delete projects[pid];
+  if (user) {
+    const { remove } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    await remove(ref(db, `writingguide/users/${user.uid}/projects/${pid}`));
+  }
+  const ids = Object.keys(projects);
+  if (ids.length === 0) {
+    // create blank
+    const newPid = generateId();
+    projects[newPid] = { title: '', state: { project:'', activeSec:0, open:{}, done:{}, text:{} } };
+    if (user) await set(projectRef(user.uid, newPid), projects[newPid]);
+    activeProjectId = newPid;
+  } else if (activeProjectId === pid) {
+    activeProjectId = ids[0];
+  }
+  loadActiveProject();
+  renderProjectList();
+};
 
 /* ── Sections data ── */
 const SECTIONS = [
@@ -334,53 +533,9 @@ function showSync(s, msg='') {
   el.className = `sync-${s}`;
 }
 
-function userDataRef(uid) {
-  return ref(db, `writingguide/users/${uid}/data`);
-}
-
-async function loadFromCloud(uid) {
-  showSync('loading');
-  const timer = setTimeout(() => showSync('offline'), 8000);
-  try {
-    const snap = await get(userDataRef(uid));
-    clearTimeout(timer);
-    if (snap.exists()) {
-      const saved = snap.val();
-      if (saved.project   !== undefined) state.project   = saved.project;
-      if (saved.done)                    state.done      = saved.done;
-      if (saved.open)                    state.open      = saved.open;
-      if (saved.text)                    state.text      = saved.text;
-      if (saved.activeSec !== undefined) state.activeSec = saved.activeSec;
-      const pn = document.getElementById('project-name');
-      if (pn) pn.value = state.project || '';
-    }
-    showSync('synced');
-  } catch(e) {
-    clearTimeout(timer);
-    showSync('error', e.message);
-  }
-  renderAll();
-}
-
 function scheduleSave(uid) {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => saveToCloud(uid), 900);
-}
-
-async function saveToCloud(uid) {
-  showSync('loading');
-  try {
-    await set(userDataRef(uid), {
-      project:   state.project,
-      done:      state.done,
-      open:      state.open,
-      text:      state.text,
-      activeSec: state.activeSec
-    });
-    showSync('synced');
-  } catch(e) {
-    showSync('error', e.message);
-  }
+  saveTimer = setTimeout(() => saveCurrentProject(uid), 900);
 }
 
 /* ── Auth state ── */
@@ -388,17 +543,24 @@ onAuthStateChanged(auth, user => {
   if (user) {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app-screen').style.display  = 'block';
-    loadFromCloud(user.uid);
+    showSync('loading');
+    loadProjects(user.uid);
     const pn = document.getElementById('project-name');
     if (pn) {
       pn.addEventListener('input', () => {
         state.project = pn.value;
+        if (activeProjectId && projects[activeProjectId]) {
+          projects[activeProjectId].title = pn.value;
+        }
         scheduleSave(user.uid);
       });
     }
   } else {
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app-screen').style.display  = 'none';
+    state = { project:'', activeSec:0, open:{}, done:{}, text:{} };
+    projects = {};
+    activeProjectId = null;
   }
 });
 
@@ -466,7 +628,6 @@ window.signInGoogle = async function() {
 
 window.signOut = async function() {
   await fbSignOut(auth);
-  state = { project:'', activeSec:0, open:{}, done:{}, text:{} };
 };
 
 /* ── Render ── */
@@ -705,7 +866,7 @@ window.addEventListener('offline', () => {
 window.addEventListener('online', () => {
   document.getElementById('offline-banner').style.display = 'none';
   const user = auth.currentUser;
-  if (user) saveToCloud(user.uid);
+  if (user) saveCurrentProject(user.uid);
 });
 </script>
 </body>
